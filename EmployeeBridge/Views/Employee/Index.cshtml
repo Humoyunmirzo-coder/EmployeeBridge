@@ -1,0 +1,85 @@
+﻿@model List<Domain.Entities.Employee>
+@{
+    ViewData["Title"] = "Import Employees";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary fw-bold">Import Employees</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <form asp-action="Import" asp-controller="Employee" method="post" enctype="multipart/form-data" class="mb-4 d-flex align-items-center gap-3">
+        <input type="file" name="file" class="form-control border-info" id="fileInput" style="max-width: 300px;" />
+        <button type="submit" class="btn btn-info" id="importBtn">Import</button>
+    </form>
+
+    <input type="text" id="searchInput" class="form-control mb-3 border-primary" placeholder="Search..." />
+
+    <table class="table table-striped table-hover border rounded shadow-sm">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>Code</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date Of Birth</th>
+                <th>Phone</th>
+                <th>Mobile</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Postcode</th>
+                <th>Email</th>
+                <th>Record Date</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTable">
+            @foreach (var employee in Model)
+            {
+                <tr class="text-center">
+                    <td class="text-info fw-bold">@employee.Code</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                    <td>@employee.Phone</td>
+                    <td>@employee.Mobile</td>
+                    <td>@employee.Address</td>
+                    <td>@employee.City</td>
+                    <td>@employee.Postcode</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.RecordDate.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            var searchValue = this.value.toLowerCase();
+            var rows = document.querySelectorAll("#employeeTable tr");
+
+            rows.forEach(row => {
+                let visible = [...row.children].some(td => td.textContent.toLowerCase().includes(searchValue));
+                row.style.display = visible ? "" : "none";
+            });
+        });
+
+        document.getElementById("fileInput").addEventListener("change", function () {
+            let btn = document.getElementById("importBtn");
+            if (this.files.length > 0) {
+                btn.classList.remove("btn-info");
+                btn.classList.add("btn-success");
+                btn.textContent = "Ready to Import ✅";
+            } else {
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-info");
+                btn.textContent = "Import";
+            }
+        });
+    </script>
+}
